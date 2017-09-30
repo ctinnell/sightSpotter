@@ -19,6 +19,7 @@ class ViewController: UIViewController, ARSKViewDelegate {
     var sightsJSON: JSON!
     var userHeading = 0.0
     var headingCount = 0
+    var pages = [UUID : String]()
     
     @IBOutlet var sceneView: ARSKView!
     
@@ -119,6 +120,7 @@ extension ViewController: CLLocationManagerDelegate {
     }
 }
 
+// getting and creating sights
 extension ViewController {
     func fetchSights() {
         let urlString = "https://en.wikipedia.org/w/api.php?ggscoord=\(userLocation.coordinate.latitude)%7C\(userLocation.coordinate.longitude)&action=query&prop=coordinates%7Cpageimages%7Cpageterms&colimit=50&piprop=thumbnail&pithumbsize=500&pilimit=50&wbptterms=description&generator=geosearch&ggsradius=10000&ggslimit=50&format=json"
@@ -132,6 +134,64 @@ extension ViewController {
     }
     
     func createSights() {
-        
+        for page in sightsJSON["query"]["pages"].dictionaryValue.values {
+            
+            // pull out this page's coordinates and make a location from them
+            let locationLat = page["coordinates"][0]["lat"].doubleValue
+            let locationLon = page["coordinates"][0]["lon"].doubleValue
+            let location = CLLocation(latitude: locationLat, longitude: locationLon)
+            
+            //calculate the distance from the user to this point, then calculate its azimuth
+            let distance = Float(userLocation.distance(from: location))
+            let azimuthFromUser = direction(from: userLocation, to: location)
+            
+            //calculate the angle from the user to that direction
+            let angle = azimuthFromUser - userHeading
+            let angleRadians = deg2rad(angle)
+            
+            //create a horizontal rotation matrix
+            let rotationHorizontal = matrix_float4x4(SCNMatrix4MakeRotation(Float(angleRadians), 1, 0, 0))
+            
+            //create a vertical rotation matrix
+            let rotationVertical = matrix_float4x4(SCNMatrix4MakeRotation(-0.2 + Float(distance / 600), 0, 1, 0))
+            
+            // Combine the horizontal and vertical matrices, then combine that with the camera transform
+            let rotation = simd_mul(rotationHorizontal, rotationVertical)
+            guard let sceneView = self.view as? ARSKView else { return }
+            guard let frame = sceneView.session.currentFrame else { return }
+            let rotation2 = simd_mul(frame.camera.transform, rotation)
+            
+            // create a matrix that lets us position the anchor into the screen, then combine that
+            // with our comined matrix so far
+            var translation = matrix_identity_float4x4
+            translation.columns.3.z = -(distance / 50)
+            
+            let transform = simd_mul(rotation2, translation)
+            
+            // create a new anchor using the final matrix, then add it to our pages dictionary
+            let anchor = ARAnchor(transform: transform)
+            sceneView.session.add(anchor: anchor)
+            pages[anchor.identifier] = page["title"].string ?? "Unknown"
+        }
     }
 }
+
+// conversion functions
+extension ViewController {
+    func deg2rad(_ degrees: Double) -> Double {
+        return degrees * Double.pi / 180
+    }
+    
+    func rad2Deg(_ radians: Double) -> Double {
+        return radians * 180 / Double.pi
+    }
+    
+    func direction(from p1: CLLocation, to p2: CLLocation) -> Double {
+        let lon_delta = p2.coordinate.longitude - p1.coordinate.longitude
+        let y = sin(lon_delta) * cos(p1.coordinate.longitude)
+        let x = cos(p1.coordinate.latitude) * sin(p2.coordinate.latitude) - sin(p1.coordinate.latitude) * cos(p2.coordinate.latitude) * cos(lon_delta)
+        let radians = atan2(y,x)
+        
+        return rad2Deg(radians)
+     }
+ }
