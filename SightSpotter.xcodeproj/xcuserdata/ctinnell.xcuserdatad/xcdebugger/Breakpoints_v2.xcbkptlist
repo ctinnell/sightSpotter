@@ -2,4 +2,54 @@
 <Bucket
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SightSpotter/ViewController.swift"
+            timestampString = "528558949.314104"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "195"
+            endingLineNumber = "195"
+            landmarkName = "createSights()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SightSpotter.ViewController.createSights() -&gt; ()"
+                  moduleName = "SightSpotter"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Development/Xcode/SightSpotter/SightSpotter/ViewController.swift"
+                  timestampString = "528558949.621139"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "195"
+                  endingLineNumber = "195"
+                  offsetFromSymbolStart = "7712">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "implicit closure #1 : @autoclosure () throws -&gt; Swift.String in SightSpotter.ViewController.createSights() -&gt; ()"
+                  moduleName = "SightSpotter"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Development/Xcode/SightSpotter/SightSpotter/ViewController.swift"
+                  timestampString = "528558949.624129"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "195"
+                  endingLineNumber = "195"
+                  offsetFromSymbolStart = "12">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

@@ -69,7 +69,28 @@ class ViewController: UIViewController, ARSKViewDelegate {
     // MARK: - ARSKViewDelegate
     
     func view(_ view: ARSKView, nodeFor anchor: ARAnchor) -> SKNode? {
-        return nil;
+        let labelNode = SKLabelNode(text: pages[anchor.identifier])
+        labelNode.horizontalAlignmentMode = .center
+        labelNode.verticalAlignmentMode = .center
+        
+        //scale up the label's size
+        let size = labelNode.frame.size.applying(CGAffineTransform(scaleX: 1.1, y: 1.4))
+        
+        //create a background node using the new size with rounded corders
+        let backgroundNode = SKShapeNode(rectOf: size, cornerRadius: 10)
+        
+        //fill with random color
+        let randomHue = CGFloat(GKRandomSource.sharedRandom().nextUniform())
+        backgroundNode.fillColor = UIColor(hue: randomHue, saturation: 6.5, brightness: 0.4, alpha: 0.9)
+        
+        //draw a border around it using a more opaque version of its fill color
+        backgroundNode.strokeColor = backgroundNode.fillColor.withAlphaComponent(1)
+        backgroundNode.lineWidth = 2
+        
+        //add the label to the background then send back the background
+        backgroundNode.addChild(labelNode)
+        
+        return backgroundNode;
     }
     
     func session(_ session: ARSession, didFailWithError error: Error) {
